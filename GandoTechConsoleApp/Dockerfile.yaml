@@ -1,0 +1,32 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+
+WORKDIR /app
+
+WORKDIR /src
+
+COPY *.sln ./
+
+COPY GandoTechConsoleApp/GandoTechConsoleApp.csproj /src/GandoTechConsoleApp/
+
+COPY GandoTechConsoleApp.Tests/GandoTechConsoleApp.Tests.csproj /src/GandoTechConsoleApp.Tests/
+
+RUN dotnet restore ./GandoTechConsoleApp
+RUN dotnet restore ./GandoTechConsoleApp.Tests
+
+COPY . .
+
+WORKDIR /src/
+
+RUN dotnet build -c Release GandoTechConsoleApp -o /app/build
+
+RUN dotnet test -c release GandoTechConsoleApp.Tests -o /app/test
+
+RUN dotnet publish -c Release GandoTechConsoleApp -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+
+WORKDIR /app
+
+COPY --from=build-env /app/publish .
+
+ENTRYPOINT ["dotnet","GandoTechConsoleApp.dll"]

@@ -1,0 +1,8 @@
+  version: "3.8"
+  services:
+    gandotechconsoleapp:
+      build:
+        context: .
+        dockerfile: Dockerfile.yaml
+      container_name: gandotechconsoleapp
+      image: gandotech/gandotechconsoleapp:1.0.0.0
